@@ -1,5 +1,6 @@
 import { SpanStatusCode } from '@opentelemetry/api';
 import { ServerHandshakeOptions } from '../router/handshake';
+import { validationErrorToRiverErrors } from '../router/errors';
 import {
   ControlMessageHandshakeRequestSchema,
   HandshakeErrorCustomHandlerFatalResponseCodes,
@@ -18,8 +19,8 @@ import {
 } from './options';
 import { DeleteSessionOptions, Transport } from './transport';
 import { coerceErrorString } from './stringifyError';
-import { Static, TSchema } from '@sinclair/typebox';
-import { Value } from '@sinclair/typebox/value';
+import type { Static, TSchema } from 'typebox';
+import { Value } from 'typebox/value';
 import { ProtocolError } from './events';
 import { Connection } from './connection';
 import { MessageMetadata } from '../logging';
@@ -237,9 +238,10 @@ export abstract class ServerTransport<
           ...session.loggingMetadata,
           transportMessage: msg,
           connectedTo: msg.from,
-          validationErrors: [
-            ...Value.Errors(ControlMessageHandshakeRequestSchema, msg.payload),
-          ],
+          validationErrors: Value.Errors(
+            ControlMessageHandshakeRequestSchema,
+            msg.payload,
+          ).flatMap(validationErrorToRiverErrors),
         },
       );
 
@@ -276,12 +278,10 @@ export abstract class ServerTransport<
           {
             ...session.loggingMetadata,
             connectedTo: msg.from,
-            validationErrors: [
-              ...Value.Errors(
-                this.handshakeExtensions.schema,
-                msg.payload.metadata,
-              ),
-            ],
+            validationErrors: Value.Errors(
+              this.handshakeExtensions.schema,
+              msg.payload.metadata,
+            ).flatMap(validationErrorToRiverErrors),
           },
         );
 

@@ -1,16 +1,21 @@
 import {
-  Kind,
-  Static,
-  TEnum,
-  TLiteral,
-  TNever,
-  TObject,
-  TSchema,
-  TString,
-  TUnion,
+  type Static,
+  type TEnum,
+  type TLiteral,
+  type TNever,
+  type TObject,
+  type TSchema,
+  type TString,
+  type TUnion,
   Type,
-} from '@sinclair/typebox';
-import { ValueErrorIterator } from '@sinclair/typebox/errors';
+} from 'typebox';
+import type {
+  TAdditionalPropertiesError,
+  TLocalizedValidationError,
+  TPropertyNamesError,
+  TRequiredError,
+  TUnevaluatedPropertiesError,
+} from 'typebox/error';
 
 /**
  * {@link UNCAUGHT_ERROR_CODE} is the code that is used when an error is thrown
@@ -33,7 +38,7 @@ export const CANCEL_CODE = 'CANCEL';
 
 type TLiteralString = TLiteral<string>;
 
-type TEnumString = TEnum<Record<string, string>>;
+type TEnumString = TEnum<Array<string>>;
 
 export type BaseErrorSchemaType =
   | TObject<{
@@ -61,18 +66,42 @@ const ValidationErrorDetails = Type.Object({
 });
 
 export const ValidationErrors = Type.Array(ValidationErrorDetails);
-export function castTypeboxValueErrors(
-  errors: ValueErrorIterator,
-): Static<typeof ValidationErrors> {
-  const result = [];
-  for (const error of errors) {
-    result.push({
-      path: error.path,
-      message: error.message,
-    });
+export function validationErrorToRiverErrors(
+  error: TLocalizedValidationError,
+): Array<{ path: string; message: string }> {
+  let propertyNames: Array<string> | undefined;
+
+  switch (error.keyword) {
+    case 'required':
+      propertyNames = (error as TRequiredError).params.requiredProperties;
+      break;
+    case 'additionalProperties':
+      propertyNames = (error as TAdditionalPropertiesError).params
+        .additionalProperties;
+      break;
+    case 'propertyNames':
+      propertyNames = (error as TPropertyNamesError).params.propertyNames;
+      break;
+    case 'unevaluatedProperties':
+      propertyNames = (error as TUnevaluatedPropertiesError).params
+        .unevaluatedProperties as Array<string>;
+      break;
   }
 
-  return result;
+  if (propertyNames) {
+    return propertyNames.map((prop) => ({
+      path: `${error.instancePath}/${prop}`,
+      message: error.message,
+    }));
+  }
+
+  return [{ path: error.instancePath, message: error.message }];
+}
+
+export function castTypeboxValueErrors(
+  errors: Array<TLocalizedValidationError>,
+): Static<typeof ValidationErrors> {
+  return errors.flatMap(validationErrorToRiverErrors);
 }
 
 /**
@@ -136,7 +165,7 @@ interface NestableProcedureErrorSchemaTypeArray
   extends Array<NestableProcedureErrorSchemaType> {}
 
 function isUnion(schema: TSchema): schema is TUnion {
-  return schema[Kind] === 'Union';
+  return Type.IsUnion(schema);
 }
 
 export type Flatten<T> = T extends BaseErrorSchemaType

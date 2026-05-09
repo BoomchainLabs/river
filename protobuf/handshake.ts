@@ -3,7 +3,7 @@ import type {
   MessageInitShape,
   MessageShape,
 } from '@bufbuild/protobuf';
-import { Static, Type } from '@sinclair/typebox';
+import { type Static } from 'typebox';
 import {
   createClientHandshakeOptions as createTransportClientHandshakeOptions,
   createServerHandshakeOptions as createTransportServerHandshakeOptions,
@@ -12,12 +12,9 @@ import {
 } from '../router/handshake';
 import { HandshakeErrorCustomHandlerFatalResponseCodes } from '../transport/message';
 import { decodeMessageBytes, encodeMessageBytes } from './shared';
+import { Uint8ArrayType } from '../customSchemas';
 
-/**
- * The handshake metadata for protobuf services travels as encoded protobuf bytes
- * over River's existing handshake extension slot.
- */
-const HandshakeBytesSchema = Type.Uint8Array();
+const HandshakeBytesSchema = Uint8ArrayType();
 
 type ProtobufHandshakeFailureCode = Static<
   typeof HandshakeErrorCustomHandlerFatalResponseCodes

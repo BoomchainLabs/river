@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
-import { Static, TNever, TSchema, Type } from '@sinclair/typebox';
+import { type Static, type TNever, type TSchema, Type } from 'typebox';
 import { ProcedureHandlerContext } from './context';
 import { Result } from './result';
 import { Readable, Writable } from './streams';
@@ -258,6 +258,12 @@ export type AnyProcedure<
   ProcedureErrorSchemaType
 >;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyRpcProcedure = RpcProcedure<any, any, any, any, any, any>;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyUploadProcedure = UploadProcedure<any, any, any, any, any, any, any>;
+
 /**
  * Represents a map of {@link Procedure}s.
  *
@@ -352,14 +358,7 @@ function rpc({
   responseData: PayloadType;
   responseError?: ProcedureErrorSchemaType;
   description?: string;
-  handler: RpcProcedure<
-    object,
-    object,
-    object,
-    PayloadType,
-    PayloadType,
-    ProcedureErrorSchemaType
-  >['handler'];
+  handler: AnyRpcProcedure['handler'];
 }) {
   return {
     ...(description ? { description } : {}),
@@ -459,15 +458,7 @@ function upload({
   responseData: PayloadType;
   responseError?: ProcedureErrorSchemaType;
   description?: string;
-  handler: UploadProcedure<
-    object,
-    object,
-    object,
-    PayloadType,
-    PayloadType,
-    PayloadType,
-    ProcedureErrorSchemaType
-  >['handler'];
+  handler: AnyUploadProcedure['handler'];
 }) {
   return {
     type: 'upload',

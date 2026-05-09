@@ -1,45 +1,19 @@
 {
   "name": "@replit/river",
   "description": "It's like tRPC but... with JSON Schema Support, duplex streaming and support for service multiplexing. Transport agnostic!",
-  "version": "0.216.1",
+  "version": "0.217.0",
   "type": "module",
   "exports": {
-    ".": {
-      "import": "./dist/router/index.js",
-      "require": "./dist/router/index.cjs"
-    },
-    "./logging": {
-      "import": "./dist/logging/index.js",
-      "require": "./dist/logging/index.cjs"
-    },
-    "./protobuf": {
-      "import": "./dist/protobuf/index.js",
-      "require": "./dist/protobuf/index.cjs"
-    },
-    "./protobuf/codec": {
-      "import": "./dist/protobuf/codec.js",
-      "require": "./dist/protobuf/codec.cjs"
-    },
-    "./codec": {
-      "import": "./dist/codec/index.js",
-      "require": "./dist/codec/index.cjs"
-    },
-    "./transport": {
-      "import": "./dist/transport/index.js",
-      "require": "./dist/transport/index.cjs"
-    },
-    "./transport/ws/client": {
-      "import": "./dist/transport/impls/ws/client.js",
-      "require": "./dist/transport/impls/ws/client.cjs"
-    },
-    "./transport/ws/server": {
-      "import": "./dist/transport/impls/ws/server.js",
-      "require": "./dist/transport/impls/ws/server.cjs"
-    },
-    "./test-util": {
-      "import": "./dist/testUtil/index.js",
-      "require": "./dist/testUtil/index.cjs"
-    }
+    ".": "./dist/router/index.js",
+    "./logging": "./dist/logging/index.js",
+    "./protobuf": "./dist/protobuf/index.js",
+    "./protobuf/codec": "./dist/protobuf/codec.js",
+    "./codec": "./dist/codec/index.js",
+    "./transport": "./dist/transport/index.js",
+    "./transport/ws/client": "./dist/transport/impls/ws/client.js",
+    "./transport/ws/server": "./dist/transport/impls/ws/server.js",
+    "./test-util": "./dist/testUtil/index.js",
+    "./customSchemas": "./dist/customSchemas/index.js"
   },
   "sideEffects": [
     "./dist/logging/index.js"
@@ -55,7 +29,7 @@
   },
   "peerDependencies": {
     "@opentelemetry/api": "^1.7.0",
-    "@sinclair/typebox": "~0.34.0"
+    "typebox": "^1.1.0"
   },
   "devDependencies": {
     "@bufbuild/buf": "^1.67.0",
@@ -63,7 +37,6 @@
     "@opentelemetry/context-async-hooks": "^1.26.0",
     "@opentelemetry/core": "^1.7.0",
     "@opentelemetry/sdk-trace-base": "^1.24.1",
-    "@sinclair/typebox": "~0.34.0",
     "@stylistic/eslint-plugin": "^2.6.4",
     "@types/ws": "^8.5.5",
     "@typescript-eslint/eslint-plugin": "^7.8.0",
@@ -72,8 +45,10 @@
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
+    "legacyTypebox": "npm:@sinclair/typebox@^0.34.49",
     "prettier": "^3.0.0",
     "tsup": "^8.4.0",
+    "typebox": "^1.1.38",
     "typescript": "^5.4.5",
     "vitest": "^3.1.1"
   },
