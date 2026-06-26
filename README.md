@@ -806,11 +806,11 @@ You can find more service examples in the [E2E test fixtures](https://github.com
 - `npm run check` -- lint
 - `npm run format` -- format
 - `npm run test` -- run tests
-- `npm run release` -- cut a new release (should bump version in package.json first)
+- `npm run build` -- build the package
 
 ## Releasing
 
-River uses an automated release process with [Release Drafter](https://github.com/release-drafter/release-drafter) for version management and NPM publishing.
+River uses [Release Drafter](https://github.com/release-drafter/release-drafter) for GitHub release notes and a GitHub Actions workflow for NPM publishing.
 
 ### Automated Release Process (Recommended)
 
@@ -821,7 +821,7 @@ River uses an automated release process with [Release Drafter](https://github.co
 
 2. **When ready to release, create a version bump PR**:
 
-   - Create a PR that bumps the version in `package.json` and `package-lock.json`. You can run `pnpm version --no-git-tag-version <version>` to bump the version.
+   - Create a PR that bumps the version in `package.json` and `package-lock.json`. You can run `npm version --no-git-tag-version <version>` to bump the version.
    - Use semantic versioning:
      - `patch` - Bug fixes, small improvements (e.g., 0.208.4 → 0.208.5)
      - `minor` - New features, backwards compatible (e.g., 0.208.4 → 0.209.0)
@@ -838,7 +838,8 @@ River uses an automated release process with [Release Drafter](https://github.co
 4. **Automation takes over**:
 
    - Publishing the release automatically triggers the "Build and Publish" workflow
-   - The `river` package is published to NPM
+   - The workflow publishes `@replit/river` to NPM
 
-5. **Manual npm release**:
-   - If the auto-publish workflow failed, you can run `npm run release` locally
+5. **If publishing fails**:
+   - Fix the workflow or package issue, then re-run the failed GitHub Actions job
+   - Local `npm run release` is only a break-glass fallback for maintainers with npm publish access
